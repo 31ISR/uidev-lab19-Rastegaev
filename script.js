@@ -1,17 +1,19 @@
+const stats = document.querySelector(".stats")
 const musicsContainer = document.querySelector(".tracks-list")
 const nameartist = []
 
 async function fetchmusic() {
     const music = await fetch("https://kitek.ktkv.dev/songs.json")
     const json = await music.json()
-    
-    for(let i = 0; i<json.length; i++){
+    let durationf = 0
+
+    for (let i = 0; i < json.length; i++) {
         const musicContainer = document.createElement("li")
         musicContainer.classList.add("track-item")
 
         const tracknumber = document.createElement("div")
         tracknumber.classList.add("track-number")
-        tracknumber.textContent = i+1
+        tracknumber.textContent = i + 1
 
         const trackmain = document.createElement("div")
         trackmain.classList.add("track-main")
@@ -22,7 +24,7 @@ async function fetchmusic() {
 
         const infotrack = document.createElement("div")
         infotrack.classList.add("track-info")
-    
+
         const name = document.createElement("div")
         name.classList.add("track-name")
         name.textContent = json[i].track.name
@@ -31,12 +33,12 @@ async function fetchmusic() {
         // }
         const nameartist = document.createElement("div")
         nameartist.classList.add("track-artist")
-// console.log(json[i].track.album.artists);
+        // console.log(json[i].track.album.artists);
 
-       nameartist.textContent = json[i].track.album.artists.map((el) => {
+        nameartist.textContent = json[i].track.album.artists.map((el) => {
             return el.name
         }).join(", ")
-       
+
         const namealb = document.createElement("div")
         namealb.classList.add("track-album")
         namealb.textContent = json[i].track.album.name
@@ -46,20 +48,22 @@ async function fetchmusic() {
 
         const trackduration = document.createElement("div")
         trackduration.classList.add("duration")
-        const ms = json[i]track.duration_ms
+        const ms = json[i].track.duration_ms
+        durationf += json[i].track.duration_ms
+        const sc = Math.floor((ms / 1000) % 60);
+        const min = Math.floor((ms / 1000 / 60) % 60);
+        const formattedTime = [
+            min.toString().padStart(2, "0"),
+            sc.toString().padStart(2, "0")
+        ].join(":");
+        trackduration.textContent = formattedTime
+
+        const popular = document.createElement("div")
+        popular.classList.add("popularity")
+        popular.textContent = `♪ ${json[i].track.popularity}`
 
 
-const seconds = Math.floor((milliseconds / 1000) % 60);
 
-const minutes = Math.floor((milliseconds / 1000 / 60) % 60);
-
-const hours = Math.floor((milliseconds / 1000 / 60 / 60) % 24);
-
- const formattedTime = [
-    hours.toString().padStart(2, "0"),
-    minutes.toString().padStart(2, "0"),
-    seconds.toString().padStart(2, "0")
-].join(":");
 
         musicsContainer.appendChild(musicContainer)
         musicContainer.appendChild(tracknumber)
@@ -69,8 +73,34 @@ const hours = Math.floor((milliseconds / 1000 / 60 / 60) % 24);
         infotrack.appendChild(name)
         infotrack.appendChild(nameartist)
         infotrack.appendChild(namealb)
-        musicContainer.appendChild(trackmain)
+        musicContainer.appendChild(trackmeta)
+        trackmeta.appendChild(trackduration)
+        trackmeta.appendChild(popular)
+
     }
-    
+    const tracks = document.createElement("div")
+    tracks.classList.add("total-duration")
+    tracks.textContent = "Треков: " + json.length
+    stats.appendChild(tracks)
+
+    const totalduration = document.createElement("div")
+    totalduration.classList.add("total-duration")
+    const minute = Math.floor((durationf / 1000 / 60) % 60);
+    const hour = Math.floor((durationf / 1000 / 60 / 60) );
+    const formatteddurattion = [
+        hour.toString().padStart(2, "0"),"ч",
+        minute.toString().padStart(2, "0"),"мин",
+    ].join(" ");
+    totalduration.textContent = "Общая длительность: " + formatteddurattion
+    stats.appendChild(totalduration)
+
 }
 fetchmusic()
+
+
+// .total-tracks {
+//     font-weight: 600;
+//     color: rgba(255, 255, 255, 0.9);
+// }
+
+// .total-duration 
